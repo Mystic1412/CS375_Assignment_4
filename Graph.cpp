@@ -1,8 +1,5 @@
 #include "Graph.h"
 
-Graph::Graph(int nodes, bool dir) : n(nodes), directed(dir){
-    adj.resize(nodes);
-}
 
 void Graph::addEdge(int u, int v){
     adj[u].push_back(v);
@@ -11,13 +8,13 @@ void Graph::addEdge(int u, int v){
     }
 }
 
-void Graph::printGraph() const{
+void Graph::printGraph(ostream& out) const{
     for(int i=0; i<n; ++i){
-        cout<<i<<": ";
+        out<<(i+1)<<": ";
         for(int v: adj[i]){
-            cout<<v<<" ";
+            out<<(v+1)<<" ";
         }
-        cout<<endl;
+        out<<"\n";
     }
 }
 

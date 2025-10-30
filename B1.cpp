@@ -1,40 +1,71 @@
 #include <chrono>
 #include <vector>
 #include "Graph.h"
+#include <algorithm>
 using namespace std;
 using namespace chrono;
 
-int main(){
+int main(int argc, char* argv[]){
+   if(argc<2){
+        cerr<<"Usage: "<<argv[0] <<" <inputfile>\n";
+        return 1;
+    }
+    ifstream inputFile(argv[1]);
+    if(!inputFile.is_open()){
+        cerr<<"Error: Cannot open file\n";
+        return 1;
+    }
+
+    string a, b;
+    vector<pair<string,string>> rawEdges;
+    unordered_set<string> labels;
+    while(inputFile>>a>>b){
+        rawEdges.push_back({a,b});
+        labels.insert(a);
+        labels.insert(b);
+    }
+    inputFile.close();
+
+    vector<string> sorted(labels.begin(), labels.end());
+    sort(sorted.begin(),sorted.end(), [](const string&a, const string &b){
+        auto numA = stoi(a.substr(2));
+        auto numB = stoi(b.substr(2));
+        return numA<numB;
+    });
+
+    unordered_map<string,int> map;
+    for(int i=0; i<(int)sorted.size();i++){
+        map[sorted[i]] =i;
+    }
+
+    vector<pair<int,int>> edges;
+    for(auto &e:rawEdges){
+        edges.push_back({map[e.first], map[e.second]});
+    }
+
+    Graph G;
+    G.directed = true;
+    G.n = sorted.size();
+    G.adj.assign(G.n,{});
+    for(auto &e: edges){
+        G.addEdge(e.first, e.second);
+    }
+
+
     ofstream outfile("B1_output.txt");
     if(!outfile.is_open()){
         cerr<<"Error: Could not open output file.\n";
         return 1;
     }
-    Graph G(15, true);
 
-    G.addEdge(1,3);
-    G.addEdge(3,4);
-    G.addEdge(0,5);
-    G.addEdge(2,5);
-    G.addEdge(3,6);
-    G.addEdge(4,7);
-    G.addEdge(5,7);
-    G.addEdge(6,8);
-    G.addEdge(8,9);
-    G.addEdge(7,10);
-    G.addEdge(2,11);
-    G.addEdge(5,12);
-    G.addEdge(3,13);
-    G.addEdge(5,13);
-    G.addEdge(13,14);
 
     outfile<<"DAG(prereq -> Course):\n";
-    for(int i=0; i<G.n;i++){
+    for(int i=0; i<G.n; ++i){
         outfile<<"cs"<<i+1<<": ";
-        for(int j=0; j<(int)G.adj[i].size(); j++){
-            outfile<<"cs"<<G.adj[i][j]+1<<" ";
+        for(int v: G.adj[i]){
+            outfile<<"cs"<<v+1<<" ";
         }
-        outfile<<"\n";    
+        outfile<<"\n";
     }
 
     outfile<<"\n";  

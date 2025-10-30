@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=c++11 -Wall -Wextra -g
+CXXFLAGS = -std=c++17 -Wall -Wextra -g
 
 TARGET = Q2b Q5b Q6 B1 B2
 OBJS = Graph.o Q2b.o Q5b.o Q6.o B1.o B2.o
